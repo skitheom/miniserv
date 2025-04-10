@@ -21,7 +21,6 @@ static const char *MSG_PREFIX = "client %d: ";
 static fd_set g_main_fds;
 static int g_fdmax;
 static int g_listener;
-static int g_next_id;
 static struct s_client *g_clients;
 
 typedef struct s_client {
@@ -152,10 +151,11 @@ void broadcast_client_msg(const char *msg, int client_fd) {
 // ---------- Client Management ----------
 
 void add_to_clients(int client_fd) {
+  static int next_client_id = 0;
   if (client_fd < 0 || client_fd >= FD_SETSIZE) {
     return;
   }
-  g_clients[client_fd].id = g_next_id++;
+  g_clients[client_fd].id = next_client_id++;
   g_clients[client_fd].buf = 0;
   broadcast(MSG_CLIENT_ARRIVAL, client_fd);
 }
